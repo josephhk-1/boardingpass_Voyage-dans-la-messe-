@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Voyage dans la Messe - Boarding Pass</title>
+    <style>
+        :root {
+            --primary-blue: #132d5a;
+            --bg-light: #f3f4f6;
+        }
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: var(--bg-light);
+            margin: 0;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            color: #333;
+        }
+        .container {
+            max-width: 500px;
+            width: 100%;
+            background: white;
+            padding: 30px;
+            border-radius: 16px;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.05);
+            text-align: center;
+        }
+        h1 {
+            color: var(--primary-blue);
+            margin-bottom: 5px;
+            font-size: 24px;
+        }
+        p {
+            color: #666;
+            margin-top: 0;
+            margin-bottom: 25px;
+        }
+        .form-group {
+            margin-bottom: 20px;
+            text-align: right;
+        }
+        label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: var(--primary-blue);
+        }
+        input[type="text"] {
+            width: 100%;
+            padding: 12px;
+            box-sizing: border-box;
+            border: 2px solid #ddd;
+            border-radius: 8px;
+            font-size: 16px;
+            transition: border-color 0.3s;
+            text-align: center;
+        }
+        input[type="text"]:focus {
+            border-color: var(--primary-blue);
+            outline: none;
+        }
+        button {
+            background-color: var(--primary-blue);
+            color: white;
+            border: none;
+            padding: 14px 28px;
+            font-size: 16px;
+            font-weight: bold;
+            border-radius: 8px;
+            cursor: pointer;
+            width: 100%;
+            transition: background 0.3s;
+        }
+        button:hover {
+            background-color: #0b1d3a;
+        }
+        #canvasContainer {
+            display: none;
+            margin-top: 20px;
+        }
+        canvas {
+            max-width: 100%;
+            height: auto;
+            border-radius: 8px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <h1>Voyage dans la Messe ✈️</h1>
+    <p>اكتب اسمك لتوليد تذكرة صعودك الشخصية بالكامل</p>
+    
+    <div class="form-group">
+        <label for="passengerName">إسم المسافر (Passenger Name):</label>
+        <input type="text" id="passengerName" placeholder="اكتب اسمك هنا..." required>
+    </div>
+    
+    <button id="generateBtn">تحميل التذكرة الخاصة بك 🎫</button>
+    
+    <div id="canvasContainer">
+        <canvas id="ticketCanvas"></canvas>
+    </div>
+</div>
+
+<script>
+    document.getElementById('generateBtn').addEventListener('click', function() {
+        const name = document.getElementById('passengerName').value.trim();
+        if (!name) {
+            alert('من فضلك اكتب اسمك أولاً!');
+            return;
+        }
+
+        const canvas = document.getElementById('ticketCanvas');
+        const ctx = canvas.getContext('2d');
+        const img = new Image();
+        
+        // تأكد من تسمية صورتك الرائعة بهذا الاسم في نفس الفولدر برة
+        img.src = 'boarding_pass_bg.jpg'; 
+        
+        img.onload = function() {
+            // الكود بياخد نفس أبعاد صورتك بالظبط بالبكسل عشان يحافظ على جودتها الأصلية العالية واللوجوهات
+            canvas.width = img.width;
+            canvas.height = img.height;
+            
+            // 1. رسم الصورة الأصلية بكل ألوانها وتفاصيلها كخلفية ثابتة
+            ctx.drawImage(img, 0, 0);
+            
+            // 2. إعدادات خط كتابة اسم الشاب (باللون الذهبي الفاتح أو الأبيض حسب رغبتك)
+            ctx.font = 'bold 32px "Segoe UI", Tahoma, Arial';
+            ctx.fillStyle = '#dfb56c'; // لون ذهبي هادي يليق مع أشعة النور والتصميم بتاعك
+            ctx.textAlign = 'center';
+            
+            // 3. مكان طباعة الاسم (الإحداثيات)
+            // لتحديد المكان بالظبط: جرب تطبع وشوف الاسم نازل فين، وعدل في النسب دي لو حابب يتحرك يمين أو شمال، فوق أو تحت
+            const nameX = img.width * 0.26;  // يحدد مكانه الأفقي فوق الخط على الشمال
+            const nameY = img.height * 0.55; // يحدد مكانه الرأسي فوق الخط بالظبط
+            
+            ctx.fillText(name, nameX, nameY);
+
+            // إظهار وتحميل الصورة تلقائياً بجودتها الكاملة
+            document.getElementById('canvasContainer').style.display = 'block';
+            
+            const downloadLink = document.createElement('a');
+            downloadLink.download = `Voyage_Messe_${name}.jpg`;
+            downloadLink.href = canvas.toDataURL('image/jpeg', 1.0); // 1.0 تعني أعلى جودة بدون أي ضغط للألوان
+            downloadLink.click();
+        };
+
+        img.onerror = function() {
+            alert('تأكد من تسمية الصورة النهائية باسم boarding_pass_bg.jpg ووضعها بجانب ملف الـ index.html');
+        };
+    });
+</script>
+
+</body>
+</html>
