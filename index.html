@@ -3,7 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ECF Airways - Carte d'Embarquement Digitale</title>
+    <title>ECF Airways - Carte d'Embarquement Officielle</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
     <style>
         :root {
             --sky-dark: #0b192c;
@@ -29,18 +30,17 @@
 
         .phone-wrapper {
             width: 100%;
-            max-width: 400px;
+            max-width: 450px;
             display: flex;
             flex-direction: column;
             gap: 20px;
         }
 
-        /* Titre de l'application */
         .app-header {
             text-align: center;
         }
         .app-header h1 {
-            font-size: 24px;
+            font-size: 26px;
             margin: 0 0 5px 0;
             font-weight: 700;
             text-transform: uppercase;
@@ -56,9 +56,9 @@
             text-transform: uppercase;
         }
 
-        /* Champ de saisie stylisé au-dessus du pass */
+        /* Boîte de saisie du prénom */
         .input-box {
-            background: rgba(255, 255, 255, 0.08);
+            background: rgba(255, 255, 255, 0.06);
             backdrop-filter: blur(10px);
             border: 1px solid rgba(255, 255, 255, 0.1);
             border-radius: 16px;
@@ -66,6 +66,7 @@
             display: flex;
             flex-direction: column;
             gap: 8px;
+            box-shadow: 0 4px 30px rgba(0, 0, 0, 0.2);
         }
         .input-box label {
             font-size: 12px;
@@ -79,7 +80,7 @@
             border-radius: 10px;
             padding: 12px;
             color: white;
-            font-size: 16px;
+            font-size: 18px;
             text-align: center;
             outline: none;
             transition: 0.3s;
@@ -89,16 +90,16 @@
             box-shadow: 0 0 10px rgba(223, 181, 108, 0.3);
         }
 
-        /* Version Numérique de la Carte d'Embarquement (Style Apple Wallet) */
+        /* L'INTERFACE TICKET RÉELLE (Sera capturée exactement ainsi au téléchargement) */
         .digital-boarding-pass {
             background: linear-gradient(135deg, #132d5a 0%, #0f2042 100%);
             border: 1px solid rgba(255, 255, 255, 0.1);
             border-radius: 24px;
-            padding: 24px;
-            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+            padding: 28px;
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.6);
             display: flex;
             flex-direction: column;
-            gap: 20px;
+            gap: 22px;
             position: relative;
         }
 
@@ -118,36 +119,60 @@
         }
 
         .label {
-            font-size: 10px;
+            font-size: 11px;
             color: var(--gold-accent);
             text-transform: uppercase;
             letter-spacing: 1px;
-            margin-bottom: 4px;
+            margin-bottom: 5px;
+            font-weight: 600;
         }
 
         .value {
             font-size: 16px;
             font-weight: 600;
         }
-        .value.large {
-            font-size: 22px;
-        }
 
-        /* Affichage dynamique du nom en gros */
         #dynamicNameDisplay {
-            font-size: 24px;
+            font-size: 26px;
             font-weight: 700;
             color: white;
-            min-height: 32px;
-            border-bottom: 1px dashed rgba(255, 255, 255, 0.2);
-            padding-bottom: 5px;
+            min-height: 35px;
+            text-transform: capitalize;
         }
 
-        /* Séparateur style ticket d'avion */
         .ticket-divider {
-            border-top: 2px dashed rgba(255, 255, 255, 0.15);
+            border-top: 2px dashed rgba(255, 255, 255, 0.2);
             margin: 5px 0;
-            position: relative;
+        }
+
+        /* SECTION DES STOPS DE TRANSIT INTEGRÉE */
+        .transit-stops-section {
+            background: rgba(0, 0, 0, 0.2);
+            border-radius: 12px;
+            padding: 14px;
+            border-left: 3px solid var(--gold-accent);
+        }
+        .stop-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 13px;
+            margin-bottom: 8px;
+            color: #d1d5db;
+        }
+        .stop-item:last-child {
+            margin-bottom: 0;
+        }
+        .stop-item.active {
+            color: var(--text-white);
+            font-weight: 600;
+        }
+        .stop-item.locked {
+            color: rgba(255, 255, 255, 0.4);
+            font-style: italic;
+        }
+        .stop-icon {
+            font-size: 14px;
         }
 
         /* Bouton d'action */
@@ -155,22 +180,22 @@
             background: linear-gradient(135deg, var(--gold-accent) 0%, #b45309 100%);
             color: #0b192c;
             border: none;
-            padding: 15px;
-            font-size: 15px;
+            padding: 16px;
+            font-size: 16px;
             font-weight: bold;
             border-radius: 12px;
             cursor: pointer;
             transition: 0.3s ease;
             text-transform: uppercase;
             letter-spacing: 0.5px;
-            margin-top: 5px;
+            box-shadow: 0 4px 15px rgba(223, 181, 108, 0.3);
         }
         .btn-download:hover {
             transform: translateY(-2px);
-            box-shadow: 0 5px 15px rgba(223, 181, 108, 0.4);
+            box-shadow: 0 6px 20px rgba(223, 181, 108, 0.5);
         }
 
-        /* Lien Instagram ECF */
+        /* Footer Instagram */
         .instagram-footer {
             text-align: center;
             margin-top: 5px;
@@ -181,19 +206,15 @@
             background: var(--insta-gradient);
             color: white;
             text-decoration: none;
-            padding: 10px 20px;
-            border-radius: 20px;
-            font-size: 12px;
+            padding: 12px 24px;
+            border-radius: 30px;
+            font-size: 13px;
             font-weight: 600;
-            box-shadow: 0 4px 12px rgba(218, 39, 67, 0.3);
-            transition: 0.2s;
+            box-shadow: 0 4px 15px rgba(218, 39, 67, 0.4);
+            transition: 0.2s ease;
         }
         .insta-btn:hover {
-            transform: scale(1.03);
-        }
-
-        #canvasContainer {
-            display: none;
+            transform: scale(1.05);
         }
     </style>
 </head>
@@ -206,22 +227,21 @@
         <p>Version Numérique — ECF Airways</p>
     </div>
 
-    <!-- Saisie des informations -->
     <div class="input-box">
         <label for="passengerName">Nom du Passager</label>
-        <input type="text" id="passengerName" placeholder="Entrez votre prénom et nom..." autocomplete="off" required>
+        <input type="text" id="passengerName" placeholder="Entrez votre prénom..." autocomplete="off" required>
     </div>
 
-    <!-- L'interface Digital Boarding Pass -->
-    <div class="digital-boarding-pass">
+    <div id="digitalTicket" class="digital-boarding-pass">
+        
         <div class="pass-row">
             <div class="pass-field">
                 <span class="label">Provenance / From</span>
                 <span class="value">Levée d'encens (Échya)</span>
             </div>
-            <div style="font-size: 20px; color: var(--gold-accent);">✈️</div>
+            <div style="font-size: 22px; color: var(--gold-accent); animation: pulse 2s infinite;">✈️</div>
             <div class="pass-field right">
-                <span class="label">Destination / To</span>
+                <span class="label">Destination Finale / To</span>
                 <span class="value">La Sainte Communion</span>
             </div>
         </div>
@@ -236,7 +256,7 @@
         <div class="pass-row">
             <div class="pass-field">
                 <span class="label">Type de Vol</span>
-                <span class="value" style="font-size: 13px;">Multi-étapes (Transit)</span>
+                <span class="value">Multi-étapes (Transit)</span>
             </div>
             <div class="pass-field right">
                 <span class="label">Heure de Réunion</span>
@@ -247,18 +267,40 @@
         <div class="pass-row">
             <div class="pass-field">
                 <span class="label">Porte / Gate</span>
-                <span class="value" style="font-size: 13px;">Porte du Sanctuaire</span>
+                <span class="value">Porte du Sanctuaire</span>
             </div>
             <div class="pass-field right">
-                <span class="label">Heure Liturgie</span>
+                <span class="label">Heure de Liturgie</span>
                 <span class="value">09H00</span>
             </div>
         </div>
 
-        <button id="generateBtn" class="btn-download">Télécharger mon Pass Imprimé 🎫</button>
+        <div class="pass-field">
+            <span class="label">Étapes de Transit / Transit Stops</span>
+            <div class="transit-stops-section">
+                <div class="stop-item active">
+                    <span class="stop-icon">📍</span>
+                    <span>1. Levée d'encens & Offrande de l'Agneau</span>
+                </div>
+                <div class="stop-item active" style="border-bottom: 1px dashed rgba(255,255,255,0.1); padding-bottom: 6px;">
+                    <span class="stop-icon">📍</span>
+                    <span>2. Liturgie de la Parole (Moutawazeens) — <span style="color: var(--gold-accent);">Étape Actuelle</span></span>
+                </div>
+                <div class="stop-item locked" style="margin-top: 6px;">
+                    <span class="stop-icon">🔒</span>
+                    <span>3. Liturgie des Fidèles (Anaphore) — En Août</span>
+                </div>
+                <div class="stop-item locked">
+                    <span class="stop-icon">🔒</span>
+                    <span>4. La Sainte Communion — Destination Finale</span>
+                </div>
+            </div>
+        </div>
+
     </div>
 
-    <!-- Footer Instagram -->
+    <button id="generateBtn" class="btn-download">Télécharger mon Pass Imprimé 🎫</button>
+
     <div class="instagram-footer">
         <a href="https://www.instagram.com/etudiantscoptesenfrance_ecf/" target="_blank" class="insta-btn">
             Suivez-nous sur Instagram @ECF 📸
@@ -267,63 +309,40 @@
 
 </div>
 
-<!-- Système Canvas invisible pour l'injection du nom sur l'image HD -->
-<div id="canvasContainer">
-    <canvas id="ticketCanvas"></canvas>
-</div>
-
 <script>
     const nameInput = document.getElementById('passengerName');
     const dynamicDisplay = document.getElementById('dynamicNameDisplay');
 
-    // Mise à jour en temps réel sur la Version Numérique
+    // Met à jour le nom sur le pass numérique au fur et à mesure de la frappe
     nameInput.addEventListener('input', function() {
         dynamicDisplay.textContent = this.value.trim() || "Passager";
     });
 
-    // Génération et téléchargement du fichier image final
+    // Génération native de l'élément HTML complet sous forme d'image HD
     document.getElementById('generateBtn').addEventListener('click', function() {
         const name = nameInput.value.trim();
         if (!name) {
-            alert('Veuillez inscrire votre nom avant de télécharger le pass !');
+            alert('Veuillez inscrire votre nom avant de lancer l\'impression de votre Pass !');
             return;
         }
 
-        const canvas = document.getElementById('ticketCanvas');
-        const ctx = canvas.getContext('2d');
-        const img = new Image();
-        
-        // Appelle ton fichier d'arrière-plan exporté depuis Figma
-        img.src = 'boarding_pass_bg.jpg'; 
-        
-        img.onload = function() {
-            canvas.width = img.width;
-            canvas.height = img.height;
-            
-            // 1. Dessine le fond d'origine (conserve logos, détails et écritures arabes)
-            ctx.drawImage(img, 0, 0);
-            
-            // 2. Configuration du texte pour s'adapter au fichier BoardingPass_Joseph.jpg
-            ctx.font = 'bold 38px "Segoe UI", Helvetica, Arial, sans-serif';
-            ctx.fillStyle = '#ffffff'; 
-            ctx.textAlign = 'left';
-            
-            // CORRECTION DES COORDONNÉES : Placement précis au-dessus du label doré "PASSENGER NAME"
-            const nameX = img.width * 0.10;  
-            const nameY = img.height * 0.42; // Remonté à 0.42 au lieu de 0.49 pour éviter toute collision
-            
-            ctx.fillText(name, nameX, nameY);
+        const targetCard = document.getElementById('digitalTicket');
 
-            // 3. Déclenchement automatique du téléchargement de l'image modifiée
+        // Capture de l'élément HTML exact avec une échelle x2 pour une qualité d'impression cristalline
+        html2canvas(targetCard, {
+            scale: 2,
+            backgroundColor: null, // Conserve la transparence des bords arrondis
+            logging: false,
+            useCORS: true
+        }).then(canvas => {
             const downloadLink = document.createElement('a');
-            downloadLink.download = `BoardingPass_${name}.jpg`;
-            downloadLink.href = canvas.toDataURL('image/jpeg', 1.0);
+            downloadLink.download = `Pass_Messe_${name}.png`;
+            downloadLink.href = canvas.toDataURL('image/png');
             downloadLink.click();
-        };
-
-        img.onerror = function() {
-            alert('Erreur : Assurez-vous d\'avoir placé votre image Figma renommée en "boarding_pass_bg.jpg" dans le même dossier.');
-        };
+        }).catch(err => {
+            alert('Un problème est survenu lors de l\'impression numérique.');
+            console.error(err);
+        });
     });
 </script>
 
